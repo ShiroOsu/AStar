@@ -9,16 +9,11 @@ namespace Units
     public class UnitScript : MonoBehaviour, IUnit
     {
         public float moveSpeed;
-        private IEnumerator m_CurrentPath;
+        private Coroutine m_CurrentPath;
         private int m_PathIndex;
         private Vector3 m_EndPos;
         private Vector3 m_NextPos;
-
-        private void Update()
-        {
-            
-        }
-
+        
         public void Move(IReadOnlyList<Cell> path)
         {
             if (m_CurrentPath != null)
@@ -26,15 +21,14 @@ namespace Units
                 StopCoroutine(m_CurrentPath);
             }
 
-            InternalMove(path);
+            InternalImp(path);
         }
 
-        private void InternalMove(IReadOnlyList<Cell> path)
+        private void InternalImp(IReadOnlyList<Cell> path)
         {
             m_EndPos = path[^1].WorldPos;
             m_NextPos = path[0].WorldPos;
-            m_CurrentPath = GoToNextDest(path);
-            StartCoroutine(m_CurrentPath);
+            m_CurrentPath = StartCoroutine(GoToNextDest(path));
         }
 
         private IEnumerator GoToNextDest(IReadOnlyList<Cell> path)
