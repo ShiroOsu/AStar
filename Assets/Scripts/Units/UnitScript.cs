@@ -24,7 +24,6 @@ namespace Units
             if (m_CurrentPath != null)
             {
                 StopCoroutine(m_CurrentPath);
-                InternalMove(path);
             }
 
             InternalMove(path);
