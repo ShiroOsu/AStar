@@ -34,12 +34,12 @@ namespace AStar
             playerScript.CalculateAStarPath += CalculatePath;
         }
 
-        private void CalculatePath(ref Vector3 targetPosition, ref Vector3Int currentPosition)
+        private void CalculatePath(in Vector3 targetPosition, in Vector3Int currentPosition)
         {
             var startCell = m_Grid[currentPosition.x, currentPosition.z];
             var endCell = m_Grid[(int) targetPosition.x, (int) targetPosition.z];
 
-            if (endCell.CellState == CellState.Closed)
+            if (endCell.CellState == CellState.Closed || endCell == startCell)
             {
                 return;
             }
@@ -111,6 +111,7 @@ namespace AStar
             }
             
             Path.Reverse();
+            playerScript.AStarPath = Path;
             ResetCells();
         }
 

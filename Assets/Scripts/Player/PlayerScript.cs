@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using AStar;
 using Interfaces;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
@@ -11,8 +13,10 @@ namespace Player
         private GameObject m_Unit;
 
         public event Action<Vector3, Vector3Int> CalculateAStarPath;
-        public delegate void Action<T, T1>(ref T ref1, ref T1 ref2);
+        public delegate void Action<T, T1>(in T vector3, in T1 vector3Int);
         
+        public List<Cell> AStarPath { get; set; }
+
         private void Update()
         {
             // left mouse button
@@ -40,9 +44,10 @@ namespace Player
                     {
                         m_Unit.TryGetComponent(out IUnit u);
 
-                        var ref1 = hit.point;
-                        var ref2 = u.GetPosition();
-                        CalculateAStarPath?.Invoke(ref ref1, ref ref2);
+                        var v3 = hit.point;
+                        var v3I = u.GetPosition();
+                        CalculateAStarPath?.Invoke(v3, v3I);
+                        u.Move(AStarPath);
                     }
                 }
             }

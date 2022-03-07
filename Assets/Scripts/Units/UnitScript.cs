@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using AStar;
 using Interfaces;
 using UnityEngine;
@@ -6,9 +8,55 @@ namespace Units
 {
     public class UnitScript : MonoBehaviour, IUnit
     {
-        public void Move(Vector3 destination)
+        public float moveSpeed;
+        private IEnumerator m_CurrentPath;
+        private int m_PathIndex;
+        private Vector3 m_EndPos;
+        private Vector3 m_NextPos;
+
+        private void Update()
         {
             
+        }
+
+        public void Move(IReadOnlyList<Cell> path)
+        {
+            if (m_CurrentPath != null)
+            {
+                StopCoroutine(m_CurrentPath);
+                InternalMove(path);
+            }
+
+            InternalMove(path);
+        }
+
+        private void InternalMove(IReadOnlyList<Cell> path)
+        {
+            m_EndPos = path[^1].WorldPos;
+            m_NextPos = path[0].WorldPos;
+            m_CurrentPath = GoToNextDest(path);
+            StartCoroutine(m_CurrentPath);
+        }
+
+        private IEnumerator GoToNextDest(IReadOnlyList<Cell> path)
+        {
+            while (transform.position != m_EndPos)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, m_NextPos, 
+                    moveSpeed * Time.deltaTime);
+                
+                if (transform.position == m_NextPos)
+                {
+                    m_PathIndex++;
+                    if (m_PathIndex > path.Count - 1)
+                    {
+                        break;
+                    }
+
+                    m_NextPos = path[m_PathIndex].WorldPos;
+                }
+                yield return null;
+            }
         }
 
         public Vector3Int GetPosition()
